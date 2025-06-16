@@ -7,7 +7,7 @@
 </head>
 <body>
 <div style="position: relative; display: inline-block;">
-  <img src="southside_map.png" alt="Carte" />
+  <img src="southside_map.png" alt="Carte" id="mapImg"/>
 
   <!-- Zone visible avec couleur -->
   <a href="https://google.fr" title="Vendeur Meth" 
@@ -27,7 +27,14 @@
   </a>
 </div>
 
-</map>
-</map>
+<script>
+  const img = document.getElementById('mapImg');
+  img.addEventListener('click', function(e) {
+    const rect = img.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    alert(`X: ${x}, Y: ${y}`);
+  });
+</script>
 </body>
 </html>
