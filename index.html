@@ -1,37 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des points - Hydra RP</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carte - Hydra RP</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .map-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .point {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .point:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .preview-container {
+      position: absolute;
+      display: none;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 6px;
+      border-radius: 10px;
+      border: 2px solid white;
+    }
+
+    .preview-img {
+      width: 180px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .preview-title {
+      color: white;
+      font-size: 14px;
+      max-width: 140px;
+      word-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
-<div style="position: relative; display: inline-block;">
+
+<div class="map-container">
   <img src="southside_map.png" alt="Carte" id="mapImg"/>
 
-  <!-- Zone visible avec couleur -->
-  <a href="https://google.fr" title="Vendeur Meth" 
-     style="position: absolute; top: 380px; left: 657px; width: 40px; height: 40px; background-color: rgba(0, 183, 255, 0.5); border-radius: 80%;">
-  </a>
-    <!-- Zone visible avec couleur -->
-  <a href="https://google.fr" title="Plaque dépôt Meth" 
-     style="position: absolute; top: 200px; left: 90px; width: 40px; height: 30px; background-color: rgba(0, 183, 255, 0.5);">
-  </a>
-    <!-- Zone visible avec couleur -->
-  <a href="https://google.fr" title="Plaque dépôt Meth" 
-     style="position: absolute; top: 150px; left: 645px; width: 40px; height: 30px; background-color: rgba(0, 183, 255, 0.5);">
-  </a>
-    <!-- Zone visible avec couleur -->
-  <a href="https://google.fr" title="Vendeur de Weed" 
-     style="position: absolute; top: 280px; left: 440px; width: 40px; height: 40px; background-color: rgba(24, 141, 0, 0.5); border-radius: 80%;">
-  </a>
-    <!-- Zone visible avec couleur -->
-  <a href="https://google.fr" title="Vendeur de Coke - Pas disponible" 
-     style="position: absolute; top: 10px; left: 10px; width: 40px; height: 40px; background-color: rgba(197, 197, 197, 0.5); border-radius: 80%;">
-  </a>
+  <!-- Points -->
+  <a class="point" style="top: 380px; left: 657px; background-color: rgba(0,183,255,0.5);" href="pnj_meth.png" target="_self"
+     data-img="pnj_meth.png" data-title="Vendeur Meth"></a>
+
+  <a class="point" style="top: 200px; left: 90px; background-color: rgba(0,183,255,0.5);"  href="meth_drop1.png" target="_self"
+     data-img="meth_drop1.png" data-title="Plaque dépôt Meth 1"></a>
+
+  <a class="point" style="top: 150px; left: 645px; background-color: rgba(0,183,255,0.5);"  href="meth_drop2.png" target="_self"
+     data-img="meth_drop2.png" data-title="Plaque dépôt Meth 2"></a>
+
+  <a class="point" style="top: 280px; left: 440px; background-color: rgba(24,141,0,0.5);"  href="pnj_weed.png" target="_self"
+     data-img="pnj_weed.png" data-title="Vendeur Weed"></a>
+
+  <a class="point" style="top: 50px; left: 50px; background-color: rgba(200,200,200,0.5);"  href="" target="_self"
+     data-img="southside_map.png" data-title="Vendeur Coke - Indisponible"></a>
+</div>
+
+<!-- Aperçu image + titre -->
+<div id="previewContainer" class="preview-container">
+  <img id="previewImg" class="preview-img" src="" alt="">
+  <div id="previewTitle" class="preview-title"></div>
 </div>
 
 <script>
+  const preview = document.getElementById('previewContainer');
+  const previewImg = document.getElementById('previewImg');
+  const previewTitle = document.getElementById('previewTitle');
+  const points = document.querySelectorAll('.point');
+
+  points.forEach(point => {
+    point.addEventListener('mouseenter', (e) => {
+      previewImg.src = point.getAttribute('data-img');
+      previewTitle.textContent = point.getAttribute('data-title');
+      preview.style.display = 'flex';
+
+      const rect = point.getBoundingClientRect();
+      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+
+      preview.style.left = (rect.left - mapRect.left + 45) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 10) + 'px';
+    });
+
+    point.addEventListener('mousemove', (e) => {
+      const rect = e.target.getBoundingClientRect();
+      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+
+      preview.style.left = (rect.left - mapRect.left + 45) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 10) + 'px';
+    });
+
+    point.addEventListener('mouseleave', () => {
+      preview.style.display = 'none';
+    });
+  });
+
+  // Pour retrouver des coordonnées
   const img = document.getElementById('mapImg');
   img.addEventListener('click', function(e) {
     const rect = img.getBoundingClientRect();
@@ -40,5 +128,6 @@
     alert(`X: ${x}, Y: ${y}`);
   });
 </script>
+
 </body>
 </html>
