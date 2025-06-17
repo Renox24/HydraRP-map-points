@@ -26,7 +26,19 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
+    .zone {
+      position: absolute;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
     .point:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .zone:hover {
       transform: scale(1.2);
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
@@ -79,11 +91,16 @@
 
   <a class="point" style="top: 50px; left: 50px; background-color: rgba(200,200,200,0.5);"  href="croix.png" target="_self"
      data-img="croix.png" data-title="Vendeur Coke - Indisponible"></a>
+
+  <a class="zone" style="top: 582px; left: 822px; width: 65px; height: 87px; background-color: rgba(248, 0, 0, 0.2);"  href="zone.png" target="_self"
+   data-title="Territoire - Cartel De Sinaloa"></a>
+
+  <a class="zone" style="top: 498px; left: 605px; width: 90px; height: 65px; background-color: rgba(167, 167, 167, 0.2);"  href="zone.png" target="_self"
+   data-title="Zone fouillée"></a>
 </div>
 
 <!-- Aperçu image + titre -->
 <div id="previewContainer" class="preview-container">
-  <img id="previewImg" class="preview-img" src="" alt="">
   <div id="previewTitle" class="preview-title"></div>
 </div>
 
@@ -92,26 +109,37 @@
   const previewImg = document.getElementById('previewImg');
   const previewTitle = document.getElementById('previewTitle');
   const points = document.querySelectorAll('.point');
+  const zone = document.querySelectorAll('.zone');
 
   points.forEach(point => {
     point.addEventListener('mouseenter', (e) => {
-      previewImg.src = point.getAttribute('data-img');
       previewTitle.textContent = point.getAttribute('data-title');
       preview.style.display = 'flex';
 
       const rect = point.getBoundingClientRect();
       const mapRect = document.querySelector('.map-container').getBoundingClientRect();
 
-      preview.style.left = (rect.left - mapRect.left + 45) + 'px';
-      preview.style.top = (rect.top - mapRect.top - 10) + 'px';
+      preview.style.left = (rect.left - mapRect.left + 40) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 25) + 'px';
     });
 
-    point.addEventListener('mousemove', (e) => {
-      const rect = e.target.getBoundingClientRect();
+    point.addEventListener('mouseleave', () => {
+      preview.style.display = 'none';
+    });
+  });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  zone.forEach(point => {
+    point.addEventListener('mouseenter', (e) => {
+      previewTitle.textContent = point.getAttribute('data-title');
+      preview.style.display = 'flex';
+
+      const rect = point.getBoundingClientRect();
       const mapRect = document.querySelector('.map-container').getBoundingClientRect();
 
-      preview.style.left = (rect.left - mapRect.left + 45) + 'px';
-      preview.style.top = (rect.top - mapRect.top - 10) + 'px';
+      preview.style.left = (rect.left - mapRect.left + 110) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 35) + 'px';
     });
 
     point.addEventListener('mouseleave', () => {
