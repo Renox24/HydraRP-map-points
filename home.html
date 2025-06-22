@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carte - Hydra RP</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .map-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .point {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .zone {
+      position: absolute;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .point:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .zone:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .preview-container {
+      position: absolute;
+      display: none;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 6px;
+      border-radius: 10px;
+      border: 2px solid white;
+    }
+
+    .preview-img {
+      width: 180px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .preview-title {
+      color: white;
+      font-size: 14px;
+      max-width: 140px;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+<div class="map-container">
+  <img src="southside_map.png" alt="Carte" id="mapImg"/>
+
+  <!-- Points -->
+  <a class="point" style="top: 380px; left: 657px; background-color: rgba(0,183,255,0.5);" href="pnj_meth.png" target="_self"
+     data-img="pnj_meth.png" data-title="Vendeur Meth"></a>
+
+  <a class="point" style="top: 200px; left: 90px; background-color: rgba(0,183,255,0.5);"  href="meth_drop1.png" target="_self"
+     data-img="meth_drop1.png" data-title="Plaque dépôt Meth 1"></a>
+
+  <a class="point" style="top: 150px; left: 645px; background-color: rgba(0,183,255,0.5);"  href="meth_drop2.png" target="_self"
+     data-img="meth_drop2.png" data-title="Plaque dépôt Meth 2"></a>
+
+  <a class="point" style="top: 280px; left: 440px; background-color: rgba(24,141,0,0.5);"  href="pnj_weed.png" target="_self"
+     data-img="pnj_weed.png" data-title="Vendeur rapide Weed"></a>
+
+  <a class="point" style="top: 477px; left: 370px; background-color: rgba(24,141,0,0.5);"  href="pnj_weed_exp.png" target="_self"
+     data-img="pnj_weed_exp.png" data-title="Exportateur de Weed"></a>
+
+  <a class="point" style="top: 120px; left: 570px; background-color: rgba(200,200,200,0.5);"  href="pnj_coke.png" target="_self"
+     data-img="pnj_coke.png" data-title="Vendeur Coke"></a>
+
+  <a class="zone" style="top: 582px; left: 822px; width: 65px; height: 87px; background-color: rgba(248, 0, 0, 0.2);"  href="zone.png" target="_self"
+   data-title="Territoire - Cartel De Sinaloa"></a>
+
+  <a class="zone" style="top: 498px; left: 605px; width: 90px; height: 65px; background-color: rgba(167, 167, 167, 0.2);"  href="zone.png" target="_self"
+   data-title="Zone publique"></a>
+
+  <a class="zone" style="top: 165px; left: 824px; width: 150px; height: 148px; background-color: rgba(0, 159, 233, 0.185);"  href="zone.png" target="_self"
+   data-title="Commissariat"></a>
+
+  <a class="zone" style="top: 400px; left: 175px; width: 80px; height: 90px; background-color: rgba(0, 159, 233, 0.185);"  href="zone.png" target="_self"
+   data-title="Base inconnue - Privée"></a>
+
+  <a class="point" style="top: 345px; left: 510px; width: 60px; height: 60px; background-color: rgba(248, 0, 0, 0.2);"  href="zone.png" target="_self"
+   data-title="Bureaux : CyberInfo"></a>
+</div>
+
+<img src="egouts.png" alt="Carte egouts" id="mapegImg"/>
+
+<!-- Aperçu image + titre -->
+<div id="previewContainer" class="preview-container">
+  <div id="previewTitle" class="preview-title"></div>
+</div>
+
+<script>
+  const preview = document.getElementById('previewContainer');
+  const previewImg = document.getElementById('previewImg');
+  const previewTitle = document.getElementById('previewTitle');
+  const points = document.querySelectorAll('.point');
+  const zone = document.querySelectorAll('.zone');
+
+  points.forEach(point => {
+    point.addEventListener('mouseenter', (e) => {
+      previewTitle.textContent = point.getAttribute('data-title');
+      preview.style.display = 'flex';
+
+      const rect = point.getBoundingClientRect();
+      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+
+      preview.style.left = (rect.left - mapRect.left + 40) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 25) + 'px';
+    });
+
+    point.addEventListener('mouseleave', () => {
+      preview.style.display = 'none';
+    });
+  });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  zone.forEach(point => {
+    point.addEventListener('mouseenter', (e) => {
+      previewTitle.textContent = point.getAttribute('data-title');
+      preview.style.display = 'flex';
+
+      const rect = point.getBoundingClientRect();
+      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+
+      preview.style.left = (rect.left - mapRect.left + 110) + 'px';
+      preview.style.top = (rect.top - mapRect.top - 35) + 'px';
+    });
+
+    point.addEventListener('mouseleave', () => {
+      preview.style.display = 'none';
+    });
+  });
+
+  // Pour retrouver des coordonnées
+  const img = document.getElementById('mapImg');
+  img.addEventListener('click', function(e) {
+    const rect = img.getBoundingClientRect();
+    const x = Math.round(e.clientX - rect.left);
+    const y = Math.round(e.clientY - rect.top);
+    alert(`X: ${x}, Y: ${y}`);
+  });
+</script>
+
+</body>
+</html>
