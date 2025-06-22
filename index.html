@@ -1,172 +1,341 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Carte - Hydra RP</title>
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Page de chargement</title>
+<style>
     body {
-      background-color: #0d0d0d;
-      color: white;
-      font-family: Arial, sans-serif;
+        background-color: #000000;
+        color: #00ff00;
+        font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+        padding: 0;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 20px;
     }
 
-    .map-container {
-      position: relative;
-      display: inline-block;
+    /* Titre avec bouclier */
+    #site-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #00ff00;
+        font-size: 32px;
+        font-weight: bold;
+        text-shadow: 0 0 10px #00ff00;
+        user-select: none;
     }
 
-    .point {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid white;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Bouclier SVG */
+    #shield-icon {
+        width: 36px;
+        height: 36px;
+        fill: none;
+        stroke: #00ff00;
+        stroke-width: 3;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 4px #00ff00);
     }
 
-    .zone {
-      position: absolute;
-      cursor: pointer;
-      border: 2px solid white;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    #terminal {
+        width: 800px;
+        background-color: #000000dd;
+        border-radius: 8px;
+        box-shadow: 0 0 20px #00ff00aa;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        max-height: 90vh;
     }
 
-    .point:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    #titlebar {
+        height: 30px;
+        background-color: #111;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        user-select: none;
+        gap: 12px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #004400;
+        flex-shrink: 0;
     }
 
-    .zone:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    .mac-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 5px #000 inset;
+        cursor: default;
+        flex-shrink: 0;
+    }
+    .mac-btn.red {
+        background: #ff5f56;
+    }
+    .mac-btn.yellow {
+        background: #ffbd2e;
+    }
+    .mac-btn.green {
+        background: #27c93f;
     }
 
-    .preview-container {
-      position: absolute;
-      display: none;
-      flex-direction: row;
-      align-items: center;
-      gap: 10px;
-      z-index: 10;
-      background-color: rgba(0, 0, 0, 0.8);
-      padding: 6px;
-      border-radius: 10px;
-      border: 2px solid white;
+    #program-name {
+        color: #00ff00;
+        font-weight: 600;
+        text-shadow: 0 0 10px #00ff00;
+        font-size: 14px;
+        user-select: none;
     }
 
-    .preview-img {
-      width: 180px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
+    #fixed-text {
+        padding: 15px 20px 0 20px;
+        color: #00ff00;
+        font-weight: bold;
+        font-size: 18px;
+        text-shadow: 0 0 8px #00ff00;
+        user-select: none;
+        flex-shrink: 0;
     }
 
-    .preview-title {
-      color: white;
-      font-size: 14px;
-      max-width: 140px;
-      word-wrap: break-word;
+    #separator {
+        margin: 10px 20px 0 20px;
+        border-bottom: 1px solid #004400;
+        flex-shrink: 0;
     }
-  </style>
+
+    #console {
+        white-space: pre-wrap;
+        font-size: 18px;
+        line-height: 1.5;
+        padding: 15px 20px 20px 20px;
+        flex-grow: 1;
+        overflow-y: auto;
+        user-select: none;
+        min-height: 40px;
+        max-height: 400px;
+        background: #000;
+        border-top: 1px solid #004400;
+    }
+
+    .red {
+        color: #ff4c4c;
+        text-shadow: 0 0 6px #ff4c4c;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 10px;
+        background-color: #00ff00;
+        margin-left: 3px;
+        animation: blink 1s steps(2, start) infinite;
+        vertical-align: bottom;
+        border-radius: 2px;
+    }
+
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        50.01%, 100% { opacity: 0; }
+    }
+
+    #status-bar {
+        background-color: #111;
+        border-top: 1px solid #004400;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-around;
+        font-size: 16px;
+        color: #00ff00;
+        user-select: none;
+        box-shadow: inset 0 1px 3px #00ff0077;
+        flex-shrink: 0;
+    }
+
+    .status-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 0 6px #00ff00;
+        font-weight: 600;
+    }
+
+    .status-icon {
+        font-size: 20px;
+    }
+
+    #progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #003300;
+    overflow: hidden;
+    position: relative;
+    border-top: 1px solid #00ff00;
+}
+
+#progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #00ff00;
+    box-shadow: 0 0 10px #00ff00;
+    animation: progressLoop 2s linear infinite alternate;
+}
+
+@keyframes progressLoop {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+#maintenance-box {
+    width: 100%;
+    background-color: #111;
+    color: #00ff00;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-family: monospace;
+    font-size: 14px;
+    border-top: 1px solid #00ff00;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 10px rgba(0, 255, 0, 0.3);
+}
+
+.spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #00ff00;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    margin-right: 10px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.dots span {
+    opacity: 0;
+    animation: blinkDots 1.5s infinite;
+    animation-delay: calc(var(--i) * 0.3s);
+    margin-left: 2px;
+}
+
+.dots span:nth-child(1) { --i: 0; }
+.dots span:nth-child(2) { --i: 1; }
+.dots span:nth-child(3) { --i: 2; }
+
+@keyframes blinkDots {
+    0%, 100% { opacity: 0; }
+    20% { opacity: 1; }
+    40% { opacity: 0; }
+}
+
+</style>
 </head>
 <body>
 
-<div class="map-container">
-  <img src="southside_map.png" alt="Carte" id="mapImg"/>
+    <div id="site-title">
+        <svg id="shield-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <path d="M32 2 L12 12 V28 C12 44 32 62 32 62 C32 62 52 44 52 28 V12 Z"/>
+            <path d="M32 22 L32 38"/>
+            <path d="M22 28 L42 28"/>
+        </svg>
+        clchosting
+    </div>
 
-  <!-- Points -->
-  <a class="point" style="top: 380px; left: 657px; background-color: rgba(0,183,255,0.5);" href="pnj_meth.png" target="_self"
-     data-img="pnj_meth.png" data-title="Vendeur Meth"></a>
+    <div id="terminal">
+        <div id="titlebar">
+            <span class="mac-btn red"></span>
+            <span class="mac-btn yellow"></span>
+            <span class="mac-btn green"></span>
+            <div id="program-name">system_maintenance.exe</div>
+        </div>
 
-  <a class="point" style="top: 200px; left: 90px; background-color: rgba(0,183,255,0.5);"  href="meth_drop1.png" target="_self"
-     data-img="meth_drop1.png" data-title="Plaque dépôt Meth 1"></a>
+        <div id="fixed-text">Initializing security protocols... (fixed)</div>
+        <div id="separator"></div>
+        <div id="console"></div>
+        <div id="status-bar">
+            <div class="status-item"><span class="status-icon">🖥️</span> SERVERS: UPDATING</div>
+            <div class="status-item"><span class="status-icon">🛡️</span> SECURITY: SCANNING</div>
+            <div class="status-item"><span class="status-icon">☣️</span> PROTECTION: ACTIVE</div>
+        </div>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
 
-  <a class="point" style="top: 150px; left: 645px; background-color: rgba(0,183,255,0.5);"  href="meth_drop2.png" target="_self"
-     data-img="meth_drop2.png" data-title="Plaque dépôt Meth 2"></a>
+    </div>
 
-  <a class="point" style="top: 280px; left: 440px; background-color: rgba(24,141,0,0.5);"  href="pnj_weed.png" target="_self"
-     data-img="pnj_weed.png" data-title="Vendeur rapide Weed"></a>
-
-  <a class="point" style="top: 477px; left: 370px; background-color: rgba(24,141,0,0.5);"  href="pnj_weed_exp.png" target="_self"
-     data-img="pnj_weed_exp.png" data-title="Exportateur de Weed"></a>
-
-  <a class="point" style="top: 120px; left: 570px; background-color: rgba(200,200,200,0.5);"  href="pnj_coke.png" target="_self"
-     data-img="pnj_coke.png" data-title="Vendeur Coke"></a>
-
-  <a class="zone" style="top: 582px; left: 822px; width: 65px; height: 87px; background-color: rgba(248, 0, 0, 0.2);"  href="zone.png" target="_self"
-   data-title="Territoire - Cartel De Sinaloa"></a>
-
-  <a class="zone" style="top: 498px; left: 605px; width: 90px; height: 65px; background-color: rgba(167, 167, 167, 0.2);"  href="zone.png" target="_self"
-   data-title="Zone publique"></a>
-
-  <a class="zone" style="top: 165px; left: 824px; width: 150px; height: 148px; background-color: rgba(0, 159, 233, 0.185);"  href="zone.png" target="_self"
-   data-title="Commissariat"></a>
-
-  <a class="point" style="top: 345px; left: 510px; width: 60px; height: 60px; background-color: rgba(248, 0, 0, 0.2);"  href="zone.png" target="_self"
-   data-title="Bureaux : CyberInfo"></a>
+    <div id="maintenance-box">
+  <div class="spinner"></div>
+  <span class="maintenance-text">System Maintenance in Progress<span class="dots"><span>.</span><span>.</span><span>.</span></span></span>
 </div>
 
-<img src="egouts.png" alt="Carte egouts" id="mapegImg"/>
-
-<!-- Aperçu image + titre -->
-<div id="previewContainer" class="preview-container">
-  <div id="previewTitle" class="preview-title"></div>
-</div>
 
 <script>
-  const preview = document.getElementById('previewContainer');
-  const previewImg = document.getElementById('previewImg');
-  const previewTitle = document.getElementById('previewTitle');
-  const points = document.querySelectorAll('.point');
-  const zone = document.querySelectorAll('.zone');
+    const lines = [
+        "Scanning network infrastructure...",
+        "Checking firewall status...",
+        "Verifying system integrity...",
+        "Establishing secure connection...",
+        "Redirecting to the secured site..."
+    ];
 
-  points.forEach(point => {
-    point.addEventListener('mouseenter', (e) => {
-      previewTitle.textContent = point.getAttribute('data-title');
-      preview.style.display = 'flex';
+    const consoleDiv = document.getElementById('console');
+    let currentLine = 0;
 
-      const rect = point.getBoundingClientRect();
-      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
+    const cursor = document.createElement('span');
+    cursor.classList.add('cursor');
+    consoleDiv.appendChild(cursor);
 
-      preview.style.left = (rect.left - mapRect.left + 40) + 'px';
-      preview.style.top = (rect.top - mapRect.top - 25) + 'px';
-    });
+    function writeLine(line, callback) {
+        let i = 0;
+        const lineSpan = document.createElement('span');
+        lineSpan.classList.add('red');
+        consoleDiv.insertBefore(lineSpan, cursor);
 
-    point.addEventListener('mouseleave', () => {
-      preview.style.display = 'none';
-    });
-  });
+        function type() {
+            if (i < line.length) {
+                lineSpan.textContent += line.charAt(i);
+                i++;
+                setTimeout(type, 50);
+            } else {
+                lineSpan.classList.remove('red');
+                lineSpan.style.color = '#00ff00';
+                lineSpan.style.textShadow = '0 0 10px #00ff00';
+                const br = document.createElement('br');
+                consoleDiv.insertBefore(br, cursor);
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                if (callback) callback();
+            }
+        }
+        type();
+    }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function writeAllLines() {
+        if (currentLine < lines.length) {
+            writeLine(lines[currentLine], () => {
+                currentLine++;
+                writeAllLines();
+            });
+        } else {
+            // ✅ Redirection après 2 secondes
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 2000);
+        }
+    }
 
-  zone.forEach(point => {
-    point.addEventListener('mouseenter', (e) => {
-      previewTitle.textContent = point.getAttribute('data-title');
-      preview.style.display = 'flex';
-
-      const rect = point.getBoundingClientRect();
-      const mapRect = document.querySelector('.map-container').getBoundingClientRect();
-
-      preview.style.left = (rect.left - mapRect.left + 110) + 'px';
-      preview.style.top = (rect.top - mapRect.top - 35) + 'px';
-    });
-
-    point.addEventListener('mouseleave', () => {
-      preview.style.display = 'none';
-    });
-  });
-
-  // Pour retrouver des coordonnées
-  const img = document.getElementById('mapImg');
-  img.addEventListener('click', function(e) {
-    const rect = img.getBoundingClientRect();
-    const x = Math.round(e.clientX - rect.left);
-    const y = Math.round(e.clientY - rect.top);
-    alert(`X: ${x}, Y: ${y}`);
-  });
+    writeAllLines();
 </script>
+
 
 </body>
 </html>
